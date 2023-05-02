@@ -1,6 +1,6 @@
 package com.example.crud.domain;
 
-import com.example.crud.request.PostModify;
+import com.example.crud.request.PostEdit;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -29,10 +29,9 @@ public class Posts {
         this.content = content;
     }
 
-    public void updatePost(PostModify postModify) {
-        this.title = postModify.getTitle();
-        this.content = postModify.getContent();
+    public void updatePost(String title, String content) {
+        this.title = title;
+        this.content = content;
     }
-
 
 }
