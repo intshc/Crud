@@ -56,7 +56,8 @@ class PostControllerTest {
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andDo(MockMvcResultHandlers.print());
 
-        //mockMvc를 실행하면 repository에 값이 들어 간다. 이전에 get 요청하면 out of index 나오고 repo에 save하면 값이 두개가 된다.
+        //mockMvc를 실행하면 repository에 값이 들어 간다.
+        //이전에 get 요청하면 out of index 나오고 repo에 save하면 값이 두개가 된다.
         Posts posts1 = postRepository.findAll().get(0);
 
         Assertions.assertEquals(1L, postRepository.count());
@@ -135,5 +136,28 @@ class PostControllerTest {
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andDo(MockMvcResultHandlers.print());
         Assertions.assertEquals(0, postRepository.count());
+    }
+
+    @Test
+    @DisplayName("글 작성")
+    public void check() throws Exception {
+        //given
+        Posts posts = Posts.builder()
+                .title("글 제목")
+                .content("글 내용")
+                .build();
+
+        System.out.println("mockMvc 이전 count값 :"+postRepository.count());
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/post")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(posts)))
+                .andExpect(MockMvcResultMatchers.status().isOk());
+
+        System.out.println("mockMvc 이후 count값 :"+postRepository.count());
+
+        //mockMvc를 실행하면 repository에 값이 들어 간다.
+        //mockMvc 이전에 repo.findAll.get(0) 요청하면 out of index 나온다
+
     }
 }
