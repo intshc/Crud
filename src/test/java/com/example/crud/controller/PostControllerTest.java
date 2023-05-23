@@ -1,6 +1,7 @@
 package com.example.crud.controller;
 
 import com.example.crud.domain.Posts;
+import com.example.crud.exception.PostNotFound;
 import com.example.crud.repository.PostRepository;
 import com.example.crud.request.PostCreateDto;
 import com.example.crud.request.PostEdit;
@@ -67,7 +68,7 @@ class PostControllerTest {
     }
 
     @Test
-    @DisplayName("글 읽기")
+    @DisplayName("글 조회하기")
     public void ReadPost() throws Exception {
         //given
         Posts post = Posts.builder()
@@ -105,7 +106,7 @@ class PostControllerTest {
                 .build();
 
         //expect
-        mockMvc.perform(MockMvcRequestBuilders.patch("/post/{postId}",post.getId())
+        mockMvc.perform(MockMvcRequestBuilders.patch("/post/{postId}", post.getId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(postEdit)))
                 .andExpect(MockMvcResultMatchers.status().isOk())
@@ -147,17 +148,18 @@ class PostControllerTest {
                 .content("글 내용")
                 .build();
 
-        System.out.println("mockMvc 이전 count값 :"+postRepository.count());
+        System.out.println("mockMvc 이전 count값 :" + postRepository.count());
 
         mockMvc.perform(MockMvcRequestBuilders.post("/post")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(posts)))
                 .andExpect(MockMvcResultMatchers.status().isOk());
 
-        System.out.println("mockMvc 이후 count값 :"+postRepository.count());
+        System.out.println("mockMvc 이후 count값 :" + postRepository.count());
 
         //mockMvc를 실행하면 repository에 값이 들어 간다.
         //mockMvc 이전에 repo.findAll.get(0) 요청하면 out of index 나온다
 
     }
+
 }

@@ -1,6 +1,7 @@
 package com.example.crud.service;
 
 import com.example.crud.domain.Posts;
+import com.example.crud.exception.PostNotFound;
 import com.example.crud.repository.PostRepository;
 import com.example.crud.request.PostCreateDto;
 import com.example.crud.request.PostEdit;
@@ -21,7 +22,7 @@ public class PostService {
     // 게시글 조회
     public PostView postShow(Long id) {
         Posts posts = postRepository.findById(id)
-                .orElseThrow(IllegalArgumentException::new);
+                .orElseThrow(()-> new PostNotFound("존재하지 않는 글 입니다."));
 
         return PostView.builder()
                 .id(posts.getId())
