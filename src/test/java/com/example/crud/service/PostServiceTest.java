@@ -9,28 +9,26 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.function.Executable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 class PostServiceTest {
 
     @Autowired
-    PostService postService;
+    private PostService postService;
 
     @Autowired
-    PostRepository postRepository;
+    private PostRepository postRepository;
 
     @BeforeEach
-    void Clear(){
+    void Clear() {
         postRepository.deleteAll();
     }
+
     @Test
     @DisplayName("글 작성")
-    void CreatePost() throws Exception{
+    void CreatePost() throws Exception {
         //given
         postService.postCreate(PostCreateDto.builder()
                 .title("글 제목")
@@ -41,14 +39,13 @@ class PostServiceTest {
         Posts posts = postRepository.findAll().get(0);
 
         //then
-        Assertions.assertEquals(posts.getId(),1L);
-        Assertions.assertEquals(posts.getTitle(),"글 제목");
-        Assertions.assertEquals(posts.getContent(),"글 내용");
+        Assertions.assertEquals(posts.getTitle(), "글 제목");
+        Assertions.assertEquals(posts.getContent(), "글 내용");
     }
 
     @Test
     @DisplayName("글 2개 조회하기")
-    void ReadPost() throws Exception{
+    void ReadPost() throws Exception {
         //given
         postService.postCreate(PostCreateDto.builder()
                 .title("첫번째 글 제목")
@@ -65,26 +62,23 @@ class PostServiceTest {
         Posts secPost = postRepository.findAll().get(1);
 
         //then
-        Assertions.assertEquals(firstPost.getId(),1L);
-        Assertions.assertEquals(secPost.getId(),2L);
+        Assertions.assertEquals(firstPost.getTitle(), "첫번째 글 제목");
+        Assertions.assertEquals(secPost.getTitle(), "두번째 글 제목");
 
-        Assertions.assertEquals(firstPost.getTitle(),"첫번째 글 제목");
-        Assertions.assertEquals(secPost.getTitle(),"두번째 글 제목");
-
-        Assertions.assertEquals(firstPost.getContent(),"첫번째 글 내용");
-        Assertions.assertEquals(secPost.getContent(),"두번째 글 내용");
+        Assertions.assertEquals(firstPost.getContent(), "첫번째 글 내용");
+        Assertions.assertEquals(secPost.getContent(), "두번째 글 내용");
     }
 
     @Test
     @DisplayName("글 수정하기")
-    void UpdatePost() throws Exception{
+    void UpdatePost() throws Exception {
         //given
-        PostCreateDto post = PostCreateDto.builder()
+        Posts post = Posts.builder()
                 .title("수정 전 제목")
                 .content("수정 전 내용")
                 .build();
 
-        postService.postCreate(post);
+        postRepository.save(post);
         //when
 
         PostEdit postEdit = PostEdit
@@ -92,39 +86,39 @@ class PostServiceTest {
                 .title("수정 후 제목")
                 .content("수정 후 내용")
                 .build();
-        postService.postEdit(postRepository.count(),postEdit);
+        postService.postEdit(post.getId(), postEdit);
 
         //then
         Posts editedPost = postRepository.findAll().get(0);
 
-        Assertions.assertEquals(editedPost.getId(),1);
-        Assertions.assertEquals(editedPost.getTitle(),"수정 후 제목");
-        Assertions.assertEquals(editedPost.getContent(),"수정 후 내용");
+        Assertions.assertEquals(editedPost.getTitle(), "수정 후 제목");
+        Assertions.assertEquals(editedPost.getContent(), "수정 후 내용");
 
     }
+
     @Test
     @DisplayName("글 삭제하기")
-    void DeletePost() throws Exception{
+    void DeletePost() throws Exception {
         //given
-        PostCreateDto post = PostCreateDto.builder()
+        Posts post = Posts.builder()
                 .title("글 제목")
                 .content("글 내용")
                 .build();
 
-        postService.postCreate(post);
-
         //when
-        postService.postDelete(postRepository.count());
+        postRepository.save(post);
+
+        postService.postDelete(post.getId());
 
         //then
-        Assertions.assertEquals(postRepository.count(),0);
+        Assertions.assertEquals(postRepository.count(), 0);
     }
 
     @Test
     @DisplayName("없는 글 조회")
-    void findNoHavePost() throws Exception{
+    void findNoHavePost() throws Exception {
         //expect
-        Assertions.assertThrows(PostNotFound.class, ()-> postService.postShow(1L));
+        Assertions.assertThrows(PostNotFound.class, () -> postService.postShow(1L));
 
     }
 }

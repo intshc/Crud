@@ -51,7 +51,7 @@ public class PostService {
     public void postEdit(Long id, PostEdit request) {
 
         Posts findPost = postRepository.findById(id)
-                .orElseThrow(RuntimeException::new);
+                .orElseThrow(()-> new PostNotFound("존재하지 않는 글 입니다."));
 
         findPost.updatePost(request.getTitle(),request.getContent());
     }
