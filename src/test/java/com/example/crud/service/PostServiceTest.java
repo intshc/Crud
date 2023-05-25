@@ -22,13 +22,13 @@ class PostServiceTest {
     private PostRepository postRepository;
 
     @BeforeEach
-    void Clear() {
+    void clear() {
         postRepository.deleteAll();
     }
 
     @Test
     @DisplayName("글 작성")
-    void CreatePost() throws Exception {
+    void createPost() throws Exception {
         //given
         postService.postCreate(PostCreateDto.builder()
                 .title("글 제목")
@@ -45,7 +45,7 @@ class PostServiceTest {
 
     @Test
     @DisplayName("글 2개 조회하기")
-    void ReadPost() throws Exception {
+    void readPost() throws Exception {
         //given
         postService.postCreate(PostCreateDto.builder()
                 .title("첫번째 글 제목")
@@ -71,7 +71,7 @@ class PostServiceTest {
 
     @Test
     @DisplayName("글 수정하기")
-    void UpdatePost() throws Exception {
+    void updatePost() throws Exception {
         //given
         Posts post = Posts.builder()
                 .title("수정 전 제목")
@@ -98,7 +98,7 @@ class PostServiceTest {
 
     @Test
     @DisplayName("글 삭제하기")
-    void DeletePost() throws Exception {
+    void deletePost() throws Exception {
         //given
         Posts post = Posts.builder()
                 .title("글 제목")
@@ -118,7 +118,19 @@ class PostServiceTest {
     @DisplayName("없는 글 조회")
     void findNoHavePost() throws Exception {
         //expect
-        Assertions.assertThrows(PostNotFound.class, () -> postService.postShow(1L));
+        Assertions.assertThrows(PostNotFound.class, () -> postService.postShow(0L));
 
     }
+
+    @Test
+    @DisplayName("없는 글 수정")
+    void updatingNonexistentPost() throws Exception {
+        //expect
+        Assertions.assertThrows(PostNotFound.class, () -> postService.postEdit(0L, PostEdit
+                .builder()
+                .title("없는 글 수정")
+                .content("없는 내용 수정")
+                .build()));
+    }
+
 }
