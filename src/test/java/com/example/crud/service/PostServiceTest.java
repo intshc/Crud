@@ -116,7 +116,7 @@ class PostServiceTest {
 
     @Test
     @DisplayName("없는 글 조회")
-    void findNoHavePost() throws Exception {
+    void findNonexistentPost() throws Exception {
         //expect
         Assertions.assertThrows(PostNotFound.class, () -> postService.postShow(0L));
 

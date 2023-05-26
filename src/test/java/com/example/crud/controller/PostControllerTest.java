@@ -34,13 +34,13 @@ class PostControllerTest {
     private ObjectMapper objectMapper;
 
     @BeforeEach
-    void Clean() {
+    void clean() {
         postRepository.deleteAll();
     }
 
     @Test
     @DisplayName("글 작성하기")
-    public void CreatePost() throws Exception {
+    void createPost() throws Exception {
         //given
         Posts posts = Posts.builder()
                 .title("글 제목")
@@ -69,7 +69,7 @@ class PostControllerTest {
 
     @Test
     @DisplayName("글 조회하기")
-    public void ReadPost() throws Exception {
+    void readPost() throws Exception {
         //given
         Posts post = Posts.builder()
                 .title("글 제목")
@@ -91,7 +91,7 @@ class PostControllerTest {
 
     @Test
     @DisplayName("제목, 내용 바꾸기")
-    public void ChangePost() throws Exception {
+    void changePost() throws Exception {
         //given
         Posts post = Posts.builder()
                 .title("글 제목")
@@ -119,7 +119,7 @@ class PostControllerTest {
 
     @Test
     @DisplayName("글 삭제하기")
-    public void DeletePost() throws Exception {
+    void deletePost() throws Exception {
         //given
         Posts posts = Posts.builder()
                 .title("글 제목")
@@ -140,26 +140,34 @@ class PostControllerTest {
     }
 
     @Test
-    @DisplayName("글 작성")
-    public void check() throws Exception {
+    @DisplayName("없는 글 조회")
+    void findNonexistentPost() throws Exception{
+        //expect
+        mockMvc.perform(MockMvcRequestBuilders.get("/post/0"))
+                .andExpect(MockMvcResultMatchers.status().isNotFound())
+                .andDo(MockMvcResultHandlers.print());
+    }
+
+    @Test
+    @DisplayName("없는 글 수정")
+    void updateNonexistentPost() throws Exception{
         //given
         Posts posts = Posts.builder()
                 .title("글 제목")
                 .content("글 내용")
                 .build();
+        postRepository.save(posts);
 
-        System.out.println("mockMvc 이전 count값 :" + postRepository.count());
-
-        mockMvc.perform(MockMvcRequestBuilders.post("/post")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(posts)))
-                .andExpect(MockMvcResultMatchers.status().isOk());
-
-        System.out.println("mockMvc 이후 count값 :" + postRepository.count());
-
-        //mockMvc를 실행하면 repository에 값이 들어 간다.
-        //mockMvc 이전에 repo.findAll.get(0) 요청하면 out of index 나온다
-
+        PostEdit postEdit = PostEdit.builder()
+                .title("없는 글 수정")
+                .content("없는 내용 수정")
+                .build();
+        //expect
+        mockMvc.perform(MockMvcRequestBuilders.patch("/post/{postsId}",posts.getId()+1)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(postEdit)))
+                .andExpect(MockMvcResultMatchers.status().isNotFound())
+                .andDo(MockMvcResultHandlers.print());
     }
 
 }
