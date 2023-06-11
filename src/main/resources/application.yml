@@ -17,3 +17,6 @@ spring:
     hiddenmethod:
       filter:
         enabled: true
+  data:
+    rest:
+      base-path: /api
